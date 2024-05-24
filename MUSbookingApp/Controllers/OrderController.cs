@@ -43,7 +43,5 @@ namespace MUSbookingApp.Controllers
         {
             return Ok();
         }
-
-
     }
 }

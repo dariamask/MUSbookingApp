@@ -1,4 +1,6 @@
 using DAL.Data;
+using DAL.Repository.EquipmentRepo;
+using DAL.Repository.OrderRepo;
 using Microsoft.EntityFrameworkCore;
 
 namespace MUSbookingApp
@@ -18,6 +20,9 @@ namespace MUSbookingApp
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 
             var app = builder.Build();
 
