@@ -1,7 +1,9 @@
 ﻿using BAL.Dto.Order;
+using BAL.Mapper;
 using DAL.Data.Entities;
 using DAL.Repository.OrderRepo;
 using FluentResults;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BAL.Services.OrderServices
 {
@@ -28,24 +30,43 @@ namespace BAL.Services.OrderServices
             return order.MapToResponse();
         }
 
-        public Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)
+        public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId, cancellationToken);
+
+            if(order is null)
+            {
+                return Result.Fail("");
+            }
+            
+            await _orderRepository.DeleteOrderAsync(order, cancellationToken);
+
+            return Result.Ok();
+        }
+
+        public async Task<Result<List<OrderDto>>> GetOrderWithPaginationAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Result<OrderDto>> GetOrderAsync(Guid orderId, CancellationToken cancellationToken)
+        public async Task<Result<OrderDto>> UpdateOrderAsync(Guid orderId, OrderUpdateDto updatedOrder, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
+            //TODO валидация 
 
-        public Task<Result<List<OrderDto>>> GetOrderWithPaginationAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+            var order = await _orderRepository.GetOrderByIdAsync(orderId, cancellationToken);
 
-        public Task<Result<OrderDto>> UpdateOrderAsync(Guid orderId, OrderUpdateDto updatedOrder, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            if (order is null)
+            {
+                return Result.Fail("");
+            }
+
+            order.Description = updatedOrder.Description ?? order.Description;
+            order.Price = updatedOrder.Price ?? order.Price;
+            order.UpdatedAt = DateTime.Now;
+
+            await _orderRepository.UpdateOrderAsync(order, cancellationToken);
+
+            return order.MapToResponse();
         }
     }
 }

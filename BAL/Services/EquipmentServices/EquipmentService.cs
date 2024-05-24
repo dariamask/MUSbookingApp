@@ -1,4 +1,5 @@
 ﻿using BAL.Dto.Equipment;
+using DAL.Data.Entities;
 using DAL.Repository.EquipmentRepo;
 using FluentResults;
 
@@ -11,9 +12,20 @@ namespace BAL.Services.EquipmentServices
         {
             _equipmentRepository = equipmentRepository;
         }
-        public Task<Result<EquipmentService>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
+        public async Task<Result<EquipmentService>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            // TODO валидация
+
+            var equipment = new Equipment
+            {
+                Name = dto.Name,
+                Amount = dto.Amount,
+                Price = dto.Price,
+            };
+
+            await _equipmentRepository.CreateEquipmentAsync(equipment, cancellationToken);
+
+            return equipment.MapToResponse();
         }
     }
 }

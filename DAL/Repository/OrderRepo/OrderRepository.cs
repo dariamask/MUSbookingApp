@@ -25,7 +25,7 @@ namespace DAL.Repository.OrderRepo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Order?> GetOrderAsync(Guid orderId, CancellationToken cancellationToken)
+        public async Task<Order?> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken)
         {
             return await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken);
         }
