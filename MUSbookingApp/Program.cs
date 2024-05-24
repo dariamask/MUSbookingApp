@@ -1,3 +1,5 @@
+using BAL.Services.EquipmentServices;
+using BAL.Services.OrderServices;
 using DAL.Data;
 using DAL.Repository.EquipmentRepo;
 using DAL.Repository.OrderRepo;
@@ -23,6 +25,8 @@ namespace MUSbookingApp
 
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 
             var app = builder.Build();
 
