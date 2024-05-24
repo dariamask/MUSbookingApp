@@ -1,5 +1,6 @@
 ﻿using BAL.Dto.Order;
 using BAL.Mapper;
+using BAL.Services.Validation.Result;
 using DAL.Data.Entities;
 using DAL.Repository.OrderRepo;
 using FluentResults;
@@ -36,7 +37,7 @@ namespace BAL.Services.OrderServices
 
             if(order is null)
             {
-                return Result.Fail("");
+                return Result.Fail(Errors.OrderDoesntExist);
             }
             
             await _orderRepository.DeleteOrderAsync(order, cancellationToken);
@@ -57,7 +58,7 @@ namespace BAL.Services.OrderServices
 
             if (order is null)
             {
-                return Result.Fail("");
+                return Result.Fail(Errors.OrderDoesntExist);
             }
 
             order.Description = updatedOrder.Description ?? order.Description;
