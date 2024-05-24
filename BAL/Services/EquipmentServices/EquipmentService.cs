@@ -1,4 +1,5 @@
 ﻿using BAL.Dto.Equipment;
+using BAL.Mapper;
 using DAL.Data.Entities;
 using DAL.Repository.EquipmentRepo;
 using FluentResults;
@@ -12,7 +13,7 @@ namespace BAL.Services.EquipmentServices
         {
             _equipmentRepository = equipmentRepository;
         }
-        public async Task<Result<EquipmentService>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
+        public async Task<Result<EquipmentDto>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
         {
             // TODO валидация
 
