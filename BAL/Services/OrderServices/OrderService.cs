@@ -1,4 +1,5 @@
 ﻿using BAL.Dto.Order;
+using DAL.Data.Entities;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 
@@ -11,9 +12,20 @@ namespace BAL.Services.OrderServices
         {
             _orderRepository = orderRepository;
         }
-        public Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
+        public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            // TODO валидация
+
+            var order = new Order
+            {
+                Description = dto.Description,
+                CreatedAt = DateTime.Now,
+                Price = dto.Price
+            };
+
+            await _orderRepository.CreateOrderAsync(order, cancellationToken);
+
+            return order.MapToResponse();
         }
 
         public Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)
