@@ -1,10 +1,9 @@
 ﻿using BAL.Dto.Order;
 using BAL.Mapper;
-using BAL.Services.Validation.Result;
+using BAL.Validation.Result;
 using DAL.Data.Entities;
 using DAL.Repository.OrderRepo;
 using FluentResults;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BAL.Services.OrderServices
 {

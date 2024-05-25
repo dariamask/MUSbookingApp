@@ -1,5 +1,6 @@
 ﻿using BAL.Dto.Equipment;
 using BAL.Mapper;
+using BAL.Validation.Result;
 using DAL.Data.Entities;
 using DAL.Repository.EquipmentRepo;
 using FluentResults;
@@ -16,6 +17,11 @@ namespace BAL.Services.EquipmentServices
         public async Task<Result<EquipmentDto>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
         {
             // TODO валидация
+
+            if(! await _equipmentRepository.IsEquipmentUniqie(dto.Name, cancellationToken))
+            {
+                return Result.Fail(Errors.IsNotUnique);
+            }
 
             var equipment = new Equipment
             {

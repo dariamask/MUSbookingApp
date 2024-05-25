@@ -10,5 +10,6 @@ namespace DAL.Repository.EquipmentRepo
     public interface IEquipmentRepository
     {
         Task CreateEquipmentAsync(Equipment equipment, CancellationToken cancellationToken);
+        Task<bool> IsEquipmentUniqie(string equipmentName, CancellationToken cancellationToken);
     }
 }
