@@ -1,4 +1,4 @@
-﻿using BAL.Dto.Equipment;
+﻿using BAL.Dto.EquipmentDtos;
 using BAL.Services.EquipmentServices;
 using FluentResults.Extensions.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,5 @@ namespace MUSbookingApp.Controllers
             var result = await _equipmentService.CreateEquipmentAsync(createDto, cancellationToken);
             return result.ToActionResult();
         }
-
-
     }
 }

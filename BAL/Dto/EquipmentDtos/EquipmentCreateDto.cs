@@ -1,5 +1,5 @@
 ﻿
-namespace BAL.Dto.Equipment
+namespace BAL.Dto.EquipmentDtos
 {
     public record EquipmentCreateDto
     {

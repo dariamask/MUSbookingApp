@@ -1,6 +1,4 @@
-﻿
-using BAL.Dto.Equipment;
-using BAL.Dto.Order;
+﻿using BAL.Dto.EquipmentDtos;
 using FluentResults;
 
 namespace BAL.Services.EquipmentServices

@@ -1,28 +1,41 @@
-﻿using BAL.Dto.Order;
+﻿using BAL.Dto.OrderDtos;
 using BAL.Mapper;
 using BAL.Validation.Result;
 using DAL.Data.Entities;
 using DAL.Repository.OrderRepo;
 using FluentResults;
+using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 
 namespace BAL.Services.OrderServices
 {
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
-        public OrderService(IOrderRepository orderRepository)
+        private readonly IValidator<OrderCreateDto> _createValidator;
+        private readonly IValidator<OrderUpdateDto> _updateValidator;
+        public OrderService(IOrderRepository orderRepository,
+            IValidator<OrderCreateDto> createValidator,
+            IValidator<OrderUpdateDto> updateValidator)
         {
             _orderRepository = orderRepository;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
-            // TODO валидация
+            var validationResult = await _createValidator.ValidateAsync(dto, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
+            }
 
             var order = new Order
             {
                 Description = dto.Description,
                 CreatedAt = DateTime.Now,
-                Price = dto.Price
+                //Price = await _orderRepository.GetOrderPrice(dto.EquipmentIds);
             };
 
             await _orderRepository.CreateOrderAsync(order, cancellationToken);

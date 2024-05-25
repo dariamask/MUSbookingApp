@@ -1,5 +1,5 @@
 ﻿
-namespace BAL.Dto.Order
+namespace BAL.Dto.OrderDtos
 {
     public record OrderUpdateDto
     {

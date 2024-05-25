@@ -1,4 +1,4 @@
-﻿using BAL.Dto.Order;
+﻿using BAL.Dto.OrderDtos;
 using DAL.Data.Entities;
 
 namespace BAL.Mapper

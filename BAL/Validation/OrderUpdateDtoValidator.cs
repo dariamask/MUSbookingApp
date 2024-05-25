@@ -1,11 +1,11 @@
-﻿using BAL.Dto.Order;
+﻿using BAL.Dto.OrderDtos;
 using FluentValidation;
 
 namespace BAL.Validation
 {
-    public class OrderUpdateDtoValidation : AbstractValidator<OrderUpdateDto>
+    public class OrderUpdateDtoValidator : AbstractValidator<OrderUpdateDto>
     {
-        public OrderUpdateDtoValidation() 
+        public OrderUpdateDtoValidator() 
         {
             RuleFor(x => x.Description)
                 .MaximumLength(1000)

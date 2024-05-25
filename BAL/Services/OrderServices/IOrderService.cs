@@ -1,5 +1,5 @@
 ﻿
-using BAL.Dto.Order;
+using BAL.Dto.OrderDtos;
 using FluentResults;
 
 namespace BAL.Services.OrderServices

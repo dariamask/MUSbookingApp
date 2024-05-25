@@ -1,8 +1,12 @@
+using BAL.Dto.EquipmentDtos;
+using BAL.Dto.OrderDtos;
 using BAL.Services.EquipmentServices;
 using BAL.Services.OrderServices;
+using BAL.Validation;
 using DAL.Data;
 using DAL.Repository.EquipmentRepo;
 using DAL.Repository.OrderRepo;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -28,6 +32,10 @@ namespace MUSbookingApp
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IEquipmentService, EquipmentService>();
+
+            builder.Services.AddScoped<IValidator<EquipmentCreateDto>, EquipmentCreateDtoValidator>();
+            builder.Services.AddScoped<IValidator<OrderCreateDto>, OrderCreateDtoValidator>();
+            builder.Services.AddScoped<IValidator<OrderUpdateDto>, OrderUpdateDtoValidator>();
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
