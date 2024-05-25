@@ -31,11 +31,13 @@ namespace BAL.Services.OrderServices
                 return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
             }
 
+            //TODO существует ли оборудование
+
             var order = new Order
             {
                 Description = dto.Description,
                 CreatedAt = DateTime.Now,
-                //Price = await _orderRepository.GetOrderPrice(dto.EquipmentIds);
+                Price = await _orderRepository.GetOrderPriceAsync(dto.EquipmentIds),
             };
 
             await _orderRepository.CreateOrderAsync(order, cancellationToken);

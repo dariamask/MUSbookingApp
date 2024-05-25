@@ -34,6 +34,10 @@ namespace DAL.Repository.OrderRepo
         {
             throw new NotImplementedException();
         }
+        public async Task<decimal> GetOrderPriceAsync(IEnumerable<Guid> equipmentsIds)
+        {
+
+        }
 
         public async Task UpdateOrderAsync(Order order, CancellationToken cancellationToken)
         {
