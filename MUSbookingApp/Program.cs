@@ -4,6 +4,7 @@ using DAL.Data;
 using DAL.Repository.EquipmentRepo;
 using DAL.Repository.OrderRepo;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace MUSbookingApp
 {
@@ -27,6 +28,18 @@ namespace MUSbookingApp
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IEquipmentService, EquipmentService>();
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
+            builder.Services.AddSerilog(logger);
+
 
             var app = builder.Build();
 
