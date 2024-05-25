@@ -1,8 +1,6 @@
-﻿
-using DAL.Data;
+﻿using DAL.Data;
 using DAL.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DAL.Repository.OrderRepo
 {
@@ -36,7 +34,7 @@ namespace DAL.Repository.OrderRepo
         }
         public async Task<decimal> GetOrderPriceAsync(IEnumerable<Guid> equipmentsIds)
         {
-
+            throw new NotImplementedException();
         }
 
         public async Task UpdateOrderAsync(Order order, CancellationToken cancellationToken)

@@ -8,5 +8,6 @@ namespace DAL.Data.Entities
         public int Amount { get; set; }
         public decimal Price { get; set; }
         public Order? Order { get; set; }
+        public IEnumerable<OrderEquipment>? OrderEquipment { get; set; }
     }
 }

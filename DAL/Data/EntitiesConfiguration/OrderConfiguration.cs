@@ -8,7 +8,7 @@ namespace DAL.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.Navigation(x => x.Equipments).AutoInclude();
+            
         }
     }
 }

@@ -9,6 +9,7 @@ namespace DAL.Data
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<OrderEquipment> OrderEquipments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
