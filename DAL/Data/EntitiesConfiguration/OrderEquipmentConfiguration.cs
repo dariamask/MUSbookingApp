@@ -16,11 +16,11 @@ namespace DAL.Data.EntitiesConfiguration
                     });
 
             builder.HasOne(x => x.Order)
-                   .WithMany(x => x.OrderEquipment)
+                   .WithMany(x => x.OrderLine)
                    .HasForeignKey(x => x.OrderId);
 
             builder.HasOne(x => x.Equipment)
-                   .WithMany(x => x.OrderEquipment)
+                   .WithMany(x => x.OrderLine)
                    .HasForeignKey(x => x.EquipmentId);
         }
     }

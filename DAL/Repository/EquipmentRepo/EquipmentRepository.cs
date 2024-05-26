@@ -21,5 +21,10 @@ namespace DAL.Repository.EquipmentRepo
         {
             return await _context.Equipments.AnyAsync(x => x.Name == equipmentName);
         }
+
+        public async Task<Equipment?> GetEquipmentByIdAsync(Guid equipmentId, CancellationToken cancellationToken)
+        {
+            return await _context.Equipments.FirstOrDefaultAsync(x => x.Id == equipmentId, cancellationToken);
+        }
     }
 }

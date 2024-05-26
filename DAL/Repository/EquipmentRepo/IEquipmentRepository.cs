@@ -1,9 +1,4 @@
 ﻿using DAL.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Repository.EquipmentRepo
 {
@@ -11,5 +6,6 @@ namespace DAL.Repository.EquipmentRepo
     {
         Task CreateEquipmentAsync(Equipment equipment, CancellationToken cancellationToken);
         Task<bool> IsEquipmentUniqie(string equipmentName, CancellationToken cancellationToken);
+        Task<Equipment> GetEquipmentByIdAsync(Guid equipmentId, CancellationToken cancellationToken);
     }
 }

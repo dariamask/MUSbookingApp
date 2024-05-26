@@ -8,7 +8,12 @@ namespace DAL.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            
+            builder.Navigation(x => x.OrderLine).AutoInclude();
+
+            builder.HasMany<Equipment>()
+                .WithMany()
+                .UsingEntity<OrderEquipment>(cfg => cfg
+                .HasKey(joinEntity => new { joinEntity.OrderId, joinEntity.EquipmentId }));
         }
     }
 }

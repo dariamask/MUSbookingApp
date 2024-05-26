@@ -2,23 +2,26 @@
 using BAL.Mapper;
 using BAL.Validation.Result;
 using DAL.Data.Entities;
+using DAL.Repository.EquipmentRepo;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 using FluentValidation;
-using System.ComponentModel.DataAnnotations;
 
 namespace BAL.Services.OrderServices
 {
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IEquipmentRepository _equipmentRepository;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator;
         public OrderService(IOrderRepository orderRepository,
+            IEquipmentRepository equipmentRepository,
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator)
         {
             _orderRepository = orderRepository;
+            _equipmentRepository = equipmentRepository;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
         }
@@ -32,17 +35,28 @@ namespace BAL.Services.OrderServices
             }
 
             //TODO существует ли оборудование
+            
+            var equipments = dto.EquipmentIds
+                .Select(async x => await _equipmentRepository.GetEquipmentByIdAsync(x, cancellationToken))
+                .ToList();
+
+
+
 
             var order = new Order
             {
                 Description = dto.Description,
-                CreatedAt = DateTime.Now,
-                Price = await _orderRepository.GetOrderPriceAsync(dto.EquipmentIds),
-            };
+                CreatedAt = DateTime.UtcNow,
+            };            
 
-            await _orderRepository.CreateOrderAsync(order, cancellationToken);
+                        
+            
+            
 
-            return order.MapToResponse();
+
+            //await _orderRepository.CreateOrderAsync(order, cancellationToken);
+
+            return Result.Fail("");
         }
 
         public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)

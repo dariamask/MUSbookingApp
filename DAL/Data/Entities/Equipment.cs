@@ -7,7 +7,6 @@ namespace DAL.Data.Entities
         public string Name { get; set; } = null!;
         public int Amount { get; set; }
         public decimal Price { get; set; }
-        public Order? Order { get; set; }
-        public IEnumerable<OrderEquipment>? OrderEquipment { get; set; }
+        public List<OrderEquipment>? OrderLine { get; set; }
     }
 }
