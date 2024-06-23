@@ -64,7 +64,7 @@ namespace DAL.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("DAL.Data.Entities.OrderEquipment", b =>
+            modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
                     b.Property<Guid>("OrderId")
                         .HasColumnType("TEXT");
@@ -82,7 +82,7 @@ namespace DAL.Migrations
                     b.ToTable("OrderEquipments");
                 });
 
-            modelBuilder.Entity("DAL.Data.Entities.OrderEquipment", b =>
+            modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
                     b.HasOne("DAL.Data.Entities.Equipment", "Equipment")
                         .WithMany("OrderLine")

@@ -7,6 +7,6 @@ namespace DAL.Data.Entities
         public string Name { get; set; } = null!;
         public int Amount { get; set; }
         public decimal Price { get; set; }
-        public List<OrderEquipment>? OrderLine { get; set; }
+        public List<OrderLine>? OrderLine { get; set; }
     }
 }

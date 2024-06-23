@@ -12,7 +12,7 @@ namespace DAL.Data.EntitiesConfiguration
 
             builder.HasMany<Equipment>()
                 .WithMany()
-                .UsingEntity<OrderEquipment>(cfg => cfg
+                .UsingEntity<OrderLine>(cfg => cfg
                 .HasKey(joinEntity => new { joinEntity.OrderId, joinEntity.EquipmentId }));
         }
     }

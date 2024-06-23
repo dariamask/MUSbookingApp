@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Data.EntitiesConfiguration
 {
-    public class OrderEquipmentConfiguration : IEntityTypeConfiguration<OrderEquipment>
+    public class OrderEquipmentConfiguration : IEntityTypeConfiguration<OrderLine>
     {
-        public void Configure(EntityTypeBuilder<OrderEquipment> builder)
+        public void Configure(EntityTypeBuilder<OrderLine> builder)
         {
             builder.HasKey(x => new
                     {

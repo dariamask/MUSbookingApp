@@ -72,7 +72,7 @@ namespace DAL.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("DAL.Data.Entities.OrderEquipment", b =>
+            modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
                     b.Property<Guid>("OrderId")
                         .HasColumnType("TEXT");
@@ -99,16 +99,16 @@ namespace DAL.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("DAL.Data.Entities.OrderEquipment", b =>
+            modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
                     b.HasOne("DAL.Data.Entities.Equipment", "Equipment")
-                        .WithMany("OrderEquipment")
+                        .WithMany("OrderLine")
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DAL.Data.Entities.Order", "Order")
-                        .WithMany("OrderEquipment")
+                        .WithMany("OrderLine")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -120,12 +120,12 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Data.Entities.Equipment", b =>
                 {
-                    b.Navigation("OrderEquipment");
+                    b.Navigation("OrderLine");
                 });
 
             modelBuilder.Entity("DAL.Data.Entities.Order", b =>
                 {
-                    b.Navigation("OrderEquipment");
+                    b.Navigation("OrderLine");
                 });
 #pragma warning restore 612, 618
         }

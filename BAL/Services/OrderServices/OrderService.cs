@@ -34,11 +34,19 @@ namespace BAL.Services.OrderServices
                 return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
             }
 
-            //TODO существует ли оборудование
-            
-            var equipments = dto.EquipmentIds
-                .Select(async x => await _equipmentRepository.GetEquipmentByIdAsync(x, cancellationToken))
-                .ToList();
+            var order = new Order
+            {
+                Description = dto.Description,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            //существует ли оборудование
+
+            var orderToLine = new OrderLine()
+            {
+
+
+            };
 
 
 
