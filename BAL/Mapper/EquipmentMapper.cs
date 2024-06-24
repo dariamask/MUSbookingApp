@@ -1,4 +1,5 @@
 ﻿using BAL.Dto.EquipmentDtos;
+using BAL.Dto.OrderDtos;
 using DAL.Data.Entities;
 
 namespace BAL.Mapper
@@ -15,6 +16,9 @@ namespace BAL.Mapper
                 Price = equipment.Price,
             };
         }
-        
+        public static List<EquipmentDto> MapToResponse(this IEnumerable<Equipment> equipments)
+        {
+            return equipments.Select(MapToResponse).ToList();
+        }
     }
 }

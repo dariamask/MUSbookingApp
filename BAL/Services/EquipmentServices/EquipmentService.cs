@@ -6,6 +6,7 @@ using DAL.Data.Entities;
 using DAL.Repository.EquipmentRepo;
 using FluentResults;
 using FluentValidation;
+using System.Threading;
 
 namespace BAL.Services.EquipmentServices
 {
@@ -45,19 +46,18 @@ namespace BAL.Services.EquipmentServices
             return equipment.MapToResponse();
         }
 
-        public async Task<Result<EquipmentDto>> UpdateAmountOfEquipmentAsync(EquipmentUpdateDto dto, CancellationToken cancellationToken)
+        public async Task SubstructAmountOfEquipmentAsync(List<OrderLine> orderLines, CancellationToken cancellationToken)
         {
-            // TODO validation
+            // TODO validation, check total amount
 
-            var equipment = await _equipmentRepository.GetEquipmentByIdAsync(dto.Id, cancellationToken);
+            var equipments = new List<Equipment>(); 
 
-            // TODO check total amount
-
-            equipment.Amount -= dto.Amount;
-
-            await _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
-
-            return equipment.MapToResponse();
+            foreach (var orderLine in orderLines)
+            {
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLine.EquipmentId, cancellationToken);
+                equipment.Amount -= orderLine.Amount;
+                await _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BAL.Dto.OrderDtos;
 using BAL.Mapper;
+using BAL.Services.EquipmentServices;
 using BAL.Validation.Result;
 using DAL.Data;
 using DAL.Data.Entities;
@@ -16,8 +17,8 @@ namespace BAL.Services.OrderServices
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderLineRepository _orderLineRepository;
-        private readonly IEquipmentRepository _orderEquipmentRepository;
         private readonly IEquipmentRepository _equipmentRepository;
+        private readonly IEquipmentService _equipmentService;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator;
         
@@ -26,7 +27,7 @@ namespace BAL.Services.OrderServices
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator,
             IOrderLineRepository orderLineRepository,
-            IEquipmentRepository orderEquipmentRepository
+            IEquipmentService equipmentService
             )
 
         {
@@ -36,6 +37,7 @@ namespace BAL.Services.OrderServices
             _updateValidator = updateValidator;
             _orderLineRepository = orderLineRepository;
             _equipmentRepository = equipmentRepository;
+            _equipmentService = equipmentService;
         }
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
@@ -66,18 +68,16 @@ namespace BAL.Services.OrderServices
                         OrderId = order.Id,
                         EquipmentId = eq.Id,
                         Amount = eq.Quantity
-                        
                     })
                     .ToList();
 
                 await _orderLineRepository.CreateOrderLineAsync(orderLines, cancellationToken);
 
-                // вызывать из EqiupmentService?
-                
+                await _equipmentService.SubstructAmountOfEquipmentAsync(orderLines, cancellationToken);
 
-            transaction.Commit();
+                transaction.Commit();
+            }
 
-        }
             catch (Exception ex)
             {
                 // Log
