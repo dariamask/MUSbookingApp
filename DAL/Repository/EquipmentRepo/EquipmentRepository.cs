@@ -17,6 +17,11 @@ namespace DAL.Repository.EquipmentRepo
             _context.Add(equipment);
             await _context.SaveChangesAsync(cancellationToken);
         }
+        public async Task UpdateAmountOfEquipmentAsync(Equipment equipment, CancellationToken cancellationToken)
+        {
+            _context.Update(equipment);
+            await _context.SaveChangesAsync();
+        }
         public async Task<bool> IsEquipmentUniqie(string equipmentName, CancellationToken cancellationToken)
         {
             return await _context.Equipments.AnyAsync(x => x.Name == equipmentName);

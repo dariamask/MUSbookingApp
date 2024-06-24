@@ -16,6 +16,7 @@ namespace BAL.Services.OrderServices
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderLineRepository _orderLineRepository;
+        private readonly IEquipmentRepository _orderEquipmentRepository;
         private readonly IEquipmentRepository _equipmentRepository;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator;
@@ -24,7 +25,8 @@ namespace BAL.Services.OrderServices
             IEquipmentRepository equipmentRepository,
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator,
-            IOrderLineRepository orderLineRepository
+            IOrderLineRepository orderLineRepository,
+            IEquipmentRepository orderEquipmentRepository
             )
 
         {
@@ -32,7 +34,8 @@ namespace BAL.Services.OrderServices
             _equipmentRepository = equipmentRepository;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
-            _orderLineRepository = orderLineRepository;           
+            _orderLineRepository = orderLineRepository;
+            _equipmentRepository = equipmentRepository;
         }
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
@@ -45,10 +48,10 @@ namespace BAL.Services.OrderServices
                 return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
             }
 
-            //using var transaction = _orderRepository.BeginTransaction();
+            using var transaction = _orderRepository.BeginTransaction();
 
-            //try
-            //{
+            try
+            {
                 var order = new Order
                 {
                     Description = dto.Description,
@@ -69,17 +72,20 @@ namespace BAL.Services.OrderServices
 
                 await _orderLineRepository.CreateOrderLineAsync(orderLines, cancellationToken);
 
-                //transaction.Commit();
-               
-            //}
-            //catch (Exception ex)
-            //{
-            //    // Log
-            //    Console.WriteLine(ex.Message);
-            //    transaction.Rollback();
-            //}
+                // вызывать из EqiupmentService?
+                
 
-            return Result.Fail("Okay");
+            transaction.Commit();
+
+        }
+            catch (Exception ex)
+            {
+                // Log
+                Console.WriteLine(ex.Message);
+                transaction.Rollback();
+            }
+
+            return Result.Ok();
         }
 
         public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)

@@ -44,5 +44,20 @@ namespace BAL.Services.EquipmentServices
 
             return equipment.MapToResponse();
         }
+
+        public async Task<Result<EquipmentDto>> UpdateAmountOfEquipmentAsync(EquipmentUpdateDto dto, CancellationToken cancellationToken)
+        {
+            // TODO validation
+
+            var equipment = await _equipmentRepository.GetEquipmentByIdAsync(dto.Id, cancellationToken);
+
+            // TODO check total amount
+
+            equipment.Amount -= dto.Amount;
+
+            await _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
+
+            return equipment.MapToResponse();
+        }
     }
 }

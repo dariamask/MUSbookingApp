@@ -7,5 +7,6 @@ namespace DAL.Repository.EquipmentRepo
         Task CreateEquipmentAsync(Equipment equipment, CancellationToken cancellationToken);
         Task<bool> IsEquipmentUniqie(string equipmentName, CancellationToken cancellationToken);
         Task<Equipment> GetEquipmentByIdAsync(Guid equipmentId, CancellationToken cancellationToken);
+        Task UpdateAmountOfEquipmentAsync(Equipment equipment, CancellationToken cancellationToken);
     }
 }
