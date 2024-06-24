@@ -50,8 +50,7 @@ namespace BAL.Services.OrderServices
                 var order = new Order
                 {
                     Description = dto.Description,
-                    CreatedAt = DateTime.UtcNow
-                    
+                    CreatedAt = DateTime.UtcNow    
                 };
 
                 await _orderRepository.CreateOrderAsync(order, cancellationToken);

@@ -5,6 +5,7 @@ using BAL.Services.OrderServices;
 using BAL.Validation;
 using DAL.Data;
 using DAL.Repository.EquipmentRepo;
+using DAL.Repository.OrderLineRepo;
 using DAL.Repository.OrderRepo;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace MUSbookingApp
 
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+            builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 
