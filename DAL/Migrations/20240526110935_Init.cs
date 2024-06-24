@@ -47,7 +47,7 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderEquipments",
+                name: "OrderLines",
                 columns: table => new
                 {
                     OrderId = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -84,7 +84,7 @@ namespace DAL.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderEquipments_EquipmentId",
-                table: "OrderEquipments",
+                table: "OrderLines",
                 column: "EquipmentId");
         }
 
@@ -92,7 +92,7 @@ namespace DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "OrderEquipments");
+                name: "OrderLines");
 
             migrationBuilder.DropTable(
                 name: "Equipments");

@@ -17,11 +17,13 @@ namespace DAL.Data.EntitiesConfiguration
 
             builder.HasOne(x => x.Order)
                    .WithMany(x => x.OrderLine)
-                   .HasForeignKey(x => x.OrderId);
+                   .HasForeignKey(x => x.OrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Equipment)
                    .WithMany(x => x.OrderLine)
-                   .HasForeignKey(x => x.EquipmentId);
+                   .HasForeignKey(x => x.EquipmentId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

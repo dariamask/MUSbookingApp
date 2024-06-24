@@ -1,6 +1,8 @@
 ﻿using DAL.Data;
 using DAL.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace DAL.Repository.OrderRepo
 {
@@ -11,6 +13,12 @@ namespace DAL.Repository.OrderRepo
         {
             _context = context;
         }
+        public IDbTransaction BeginTransaction()
+        {
+            var transaction = _context.Database.BeginTransaction();
+            return transaction.GetDbTransaction();
+        }
+
         public async Task CreateOrderAsync(Order order, CancellationToken cancellationToken)
         {
             _context.Update(order);

@@ -11,10 +11,10 @@ namespace BAL.Validation
                 .MaximumLength(1000)
                 .When(x => x is not null);
 
-            RuleFor(x => x.Price)
-                .Must(x => x >= 0)
-                .WithMessage("Price cannot be negative")
-                .When(x => x.Price is not null);
+            //RuleFor(x => x.Price)
+            //    .Must(x => x >= 0)
+            //    .WithMessage("Price cannot be negative")
+            //    .When(x => x.Price is not null);
         }
     }
 }

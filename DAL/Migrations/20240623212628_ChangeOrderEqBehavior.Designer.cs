@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240526110935_Init")]
-    partial class Init
+    [Migration("20240623212628_ChangeOrderEqBehavior")]
+    partial class ChangeOrderEqBehavior
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,9 +33,6 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
@@ -43,8 +40,6 @@ namespace DAL.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("Equipments");
                 });
@@ -88,15 +83,6 @@ namespace DAL.Migrations
                     b.HasIndex("EquipmentId");
 
                     b.ToTable("OrderLines");
-                });
-
-            modelBuilder.Entity("DAL.Data.Entities.Equipment", b =>
-                {
-                    b.HasOne("DAL.Data.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>

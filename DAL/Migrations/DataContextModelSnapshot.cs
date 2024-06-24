@@ -79,7 +79,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("EquipmentId");
 
-                    b.ToTable("OrderEquipments");
+                    b.ToTable("OrderLines");
                 });
 
             modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
