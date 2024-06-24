@@ -3,13 +3,12 @@ using BAL.Mapper;
 using BAL.Validation.Result;
 using DAL.Data;
 using DAL.Data.Entities;
-using DAL.Data.EntitiesConfiguration;
+//using DAL.Data.EntitiesConfiguration;
 using DAL.Repository.EquipmentRepo;
 using DAL.Repository.OrderLineRepo;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 using FluentValidation;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BAL.Services.OrderServices
 {
@@ -46,10 +45,10 @@ namespace BAL.Services.OrderServices
                 return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
             }
 
-            using var transaction = _orderRepository.BeginTransaction();
+            //using var transaction = _orderRepository.BeginTransaction();
 
-            try
-            {
+            //try
+            //{
                 var order = new Order
                 {
                     Description = dto.Description,
@@ -64,19 +63,21 @@ namespace BAL.Services.OrderServices
                         OrderId = order.Id,
                         EquipmentId = eq.Id,
                         Amount = eq.Quantity
+                        
                     })
                     .ToList();
 
                 await _orderLineRepository.CreateOrderLineAsync(orderLines, cancellationToken);
 
-                transaction.Commit();
+                //transaction.Commit();
                
-            }
-            catch (Exception ex)
-            {
-                // Log
-                transaction.Rollback();
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Log
+            //    Console.WriteLine(ex.Message);
+            //    transaction.Rollback();
+            //}
 
             return Result.Fail("Okay");
         }

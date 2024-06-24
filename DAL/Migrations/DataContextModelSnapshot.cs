@@ -35,9 +35,6 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("Equipments");
                 });
 
@@ -66,39 +63,41 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("EquipmentId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("OrderId", "EquipmentId");
+                    b.Property<Guid>("EquipmentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("EquipmentId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderLines");
                 });
 
             modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
-                    b.HasOne("DAL.Data.Entities.Equipment", "Equipment")
+                    b.HasOne("DAL.Data.Entities.Equipment", null)
                         .WithMany("OrderLine")
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Data.Entities.Order", "Order")
+                    b.HasOne("DAL.Data.Entities.Order", null)
                         .WithMany("OrderLine")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Equipment");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DAL.Data.Entities.Equipment", b =>

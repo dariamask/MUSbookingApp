@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240526110935_Init")]
+    [Migration("20240624143048_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -33,18 +33,10 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("Equipments");
                 });
@@ -74,48 +66,41 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("EquipmentId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("OrderId", "EquipmentId");
+                    b.Property<Guid>("EquipmentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("EquipmentId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderLines");
                 });
 
-            modelBuilder.Entity("DAL.Data.Entities.Equipment", b =>
-                {
-                    b.HasOne("DAL.Data.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("DAL.Data.Entities.OrderLine", b =>
                 {
-                    b.HasOne("DAL.Data.Entities.Equipment", "Equipment")
+                    b.HasOne("DAL.Data.Entities.Equipment", null)
                         .WithMany("OrderLine")
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Data.Entities.Order", "Order")
+                    b.HasOne("DAL.Data.Entities.Order", null)
                         .WithMany("OrderLine")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Equipment");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DAL.Data.Entities.Equipment", b =>

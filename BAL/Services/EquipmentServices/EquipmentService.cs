@@ -21,17 +21,17 @@ namespace BAL.Services.EquipmentServices
         }
         public async Task<Result<EquipmentDto>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
+            //var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
 
-            if (!validationResult.IsValid)
-            {
-                return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
-            }
+            //if (!validationResult.IsValid)
+            //{
+            //    return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
+            //}
 
-            if (await _equipmentRepository.IsEquipmentUniqie(dto.Name, cancellationToken))
-            {
-                return Result.Fail(Errors.IsNotUnique);
-            }
+            //if (await _equipmentRepository.IsEquipmentUniqie(dto.Name, cancellationToken))
+            //{
+            //    return Result.Fail(Errors.IsNotUnique);
+            //}
 
             var equipment = new Equipment
             {
