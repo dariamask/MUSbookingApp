@@ -3,7 +3,9 @@ using BAL.Mapper;
 using BAL.Validation.Result;
 using DAL.Data;
 using DAL.Data.Entities;
+using DAL.Data.EntitiesConfiguration;
 using DAL.Repository.EquipmentRepo;
+using DAL.Repository.OrderLineRepo;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 using FluentValidation;
@@ -14,23 +16,24 @@ namespace BAL.Services.OrderServices
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderLineRepository _orderLineRepository;
         private readonly IEquipmentRepository _equipmentRepository;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator;
-        // TODO удалить черновой контекст
-        private readonly DataContext _context;
+        
         public OrderService(IOrderRepository orderRepository,
             IEquipmentRepository equipmentRepository,
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator,
-            DataContext context)
+            IOrderLineRepository orderLineRepository
+            )
 
         {
             _orderRepository = orderRepository;
             _equipmentRepository = equipmentRepository;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
-            _context = context;
+            _orderLineRepository = orderLineRepository;           
         }
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
@@ -50,19 +53,21 @@ namespace BAL.Services.OrderServices
                 var order = new Order
                 {
                     Description = dto.Description,
-                    CreatedAt = DateTime.UtcNow    
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 await _orderRepository.CreateOrderAsync(order, cancellationToken);
 
-                order.OrderLine = dto.EquipmentToOrder.Select(eq => new OrderLine
-                {
-                    OrderId = order.Id,
-                    EquipmentId = eq.Id,
-                    Amount = eq.Quantity
-                }).ToList();
+                List<OrderLine> orderLines = dto.EquipmentToOrder
+                    .Select(eq => new OrderLine
+                    {
+                        OrderId = order.Id,
+                        EquipmentId = eq.Id,
+                        Amount = eq.Quantity
+                    })
+                    .ToList();
 
-                _context.SaveChanges();
+                await _orderLineRepository.CreateOrderLineAsync(orderLines, cancellationToken);
 
                 transaction.Commit();
                
@@ -73,7 +78,7 @@ namespace BAL.Services.OrderServices
                 transaction.Rollback();
             }
 
-            return Result.Fail("");
+            return Result.Fail("Okay");
         }
 
         public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)
