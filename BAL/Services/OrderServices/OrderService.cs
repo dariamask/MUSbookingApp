@@ -10,12 +10,14 @@ using DAL.Repository.OrderLineRepo;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using System.Data;
 
 namespace BAL.Services.OrderServices
 {
     public class OrderService : IOrderService
     {
+        private readonly ILogger<OrderService> _logger;
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderLineRepository _orderLineRepository;
         private readonly IEquipmentRepository _equipmentRepository;
@@ -28,7 +30,8 @@ namespace BAL.Services.OrderServices
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator,
             IOrderLineRepository orderLineRepository,
-            IEquipmentService equipmentService
+            IEquipmentService equipmentService,
+            ILogger<OrderService> logger
             )
 
         {
@@ -39,12 +42,17 @@ namespace BAL.Services.OrderServices
             _orderLineRepository = orderLineRepository;
             _equipmentRepository = equipmentRepository;
             _equipmentService = equipmentService;
+            _logger = logger;
         }
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
             var validationResult = await _createValidator.ValidateAsync(dto, cancellationToken);
 
             // TODO валидации для создания заказа
+
+            // есть ли столько оборудования на складе?
+
+            // get equipment price
 
             if (!validationResult.IsValid)
             {
@@ -89,8 +97,7 @@ namespace BAL.Services.OrderServices
 
             catch (Exception ex)
             {
-                // Add Logger
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occured: {ErrorMessage}", ex.Message);
                 transaction.Rollback();
             }
 

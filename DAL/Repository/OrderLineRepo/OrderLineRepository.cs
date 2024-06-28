@@ -1,10 +1,5 @@
 ﻿using DAL.Data;
 using DAL.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Repository.OrderLineRepo
 {
@@ -18,10 +13,7 @@ namespace DAL.Repository.OrderLineRepo
 
         public async Task CreateOrderLineAsync(List<OrderLine> orders, CancellationToken cancellationToken)
         {
-            foreach (var orderLine in orders)
-            {
-                _context.Add(orderLine);
-            }
+            orders.ForEach(orderline => _context.Add(orderline));
             await _context.SaveChangesAsync();
         }
     }

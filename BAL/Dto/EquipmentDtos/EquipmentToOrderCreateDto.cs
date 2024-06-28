@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-
+﻿
 namespace BAL.Dto.EquipmentDtos
 {
     public record EquipmentToOrderCreateDto

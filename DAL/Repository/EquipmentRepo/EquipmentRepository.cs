@@ -1,5 +1,4 @@
-﻿
-using DAL.Data;
+﻿using DAL.Data;
 using DAL.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +29,12 @@ namespace DAL.Repository.EquipmentRepo
         public async Task<Equipment?> GetEquipmentByIdAsync(Guid equipmentId, CancellationToken cancellationToken)
         {
             return await _context.Equipments.FirstOrDefaultAsync(x => x.Id == equipmentId, cancellationToken);
+        }
+
+        public async Task<decimal> GetEquipmentPriceById(Guid EquipmentId, CancellationToken cancellationToken)
+        {
+            var equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.Id == EquipmentId, cancellationToken);
+            return equipment?.Price ?? 0;
         }
     }
 }

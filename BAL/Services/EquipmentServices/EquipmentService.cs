@@ -50,22 +50,16 @@ namespace BAL.Services.EquipmentServices
         {
             // TODO validation, check total amount
 
-            
-            /* var tasks = orderLines.Select(async orderLine =>
-            {
-                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLine.EquipmentId, cancellationToken);
-                equipment.Amount -= orderLine.Amount;   
-                _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
-            });
-            await Task.WhenAll(tasks); */
-            
-
             foreach (var orderLine in orderLines)
             {
                 var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLine.EquipmentId, cancellationToken);
                 equipment.Amount -= orderLine.Amount;   
                 await _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
             }
+        }
+        public async Task<decimal> GetEquipmentPriceById(Guid id, CancellationToken cancellationToken)
+        {
+            return await _equipmentRepository.GetEquipmentPriceById(id, cancellationToken);
         }
     }
 }

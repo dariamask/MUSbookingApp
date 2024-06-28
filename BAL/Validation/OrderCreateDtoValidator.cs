@@ -8,7 +8,9 @@ namespace BAL.Validation
     {
         public OrderCreateDtoValidator()
         {
-            RuleFor(x => x.Description).MaximumLength(1000).When(x => x is not null);          
+            RuleFor(x => x.Description)
+                .MaximumLength(1000)
+                .When(x => x is not null);
         }
 
     }

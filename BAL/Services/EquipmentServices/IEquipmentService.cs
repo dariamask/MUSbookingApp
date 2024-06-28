@@ -9,5 +9,7 @@ namespace BAL.Services.EquipmentServices
         public Task<Result<EquipmentDto>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken);
 
         public Task SubstructAmountOfEquipmentAsync(List<OrderLine> orderLines, CancellationToken cancellationToken);
+
+        public Task<decimal> GetEquipmentPriceById(Guid Id, CancellationToken cancellationToken);
     }
 }
