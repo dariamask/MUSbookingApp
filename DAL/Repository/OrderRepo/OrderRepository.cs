@@ -13,9 +13,9 @@ namespace DAL.Repository.OrderRepo
         {
             _context = context;
         }
-        public IDbTransaction BeginTransaction()
+        public IDbTransaction BeginTransaction(IsolationLevel isolationLevel)
         {
-            var transaction = _context.Database.BeginTransaction();
+            var transaction = _context.Database.BeginTransaction(isolationLevel);
             return transaction.GetDbTransaction();
         }
 

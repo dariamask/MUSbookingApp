@@ -10,6 +10,7 @@ using DAL.Repository.OrderLineRepo;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 using FluentValidation;
+using System.Data;
 
 namespace BAL.Services.OrderServices
 {
@@ -43,49 +44,58 @@ namespace BAL.Services.OrderServices
         {
             var validationResult = await _createValidator.ValidateAsync(dto, cancellationToken);
 
-            // TODO поправить правила валидации для создания заказа
+            // TODO валидации для создания заказа
 
             if (!validationResult.IsValid)
             {
                 return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
             }
 
-            using var transaction = _orderRepository.BeginTransaction();
+            var order = new Order
+            {
+                Description = dto.Description,
+                CreatedAt = DateTime.UtcNow,
+            };
 
+            using var transaction = _orderRepository.BeginTransaction(IsolationLevel.Serializable);
+            
             try
             {
-                var order = new Order
-                {
-                    Description = dto.Description,
-                    CreatedAt = DateTime.UtcNow
-                };
-
                 await _orderRepository.CreateOrderAsync(order, cancellationToken);
 
-                List<OrderLine> orderLines = dto.EquipmentToOrder
-                    .Select(eq => new OrderLine
+                if (dto.EquipmentToOrder != null)
+                {
+                    List<OrderLine> orderLines = dto.EquipmentToOrder
+                    .Select(equipmentToOrder => new OrderLine
                     {
                         OrderId = order.Id,
-                        EquipmentId = eq.Id,
-                        Amount = eq.Quantity
-                    })
-                    .ToList();
+                        EquipmentId = equipmentToOrder.Id,
+                        Amount = equipmentToOrder.Quantity
+                    }).ToList();
 
-                await _orderLineRepository.CreateOrderLineAsync(orderLines, cancellationToken);
+                    await _equipmentService.SubstructAmountOfEquipmentAsync(orderLines, cancellationToken);
 
-                await _equipmentService.SubstructAmountOfEquipmentAsync(orderLines, cancellationToken);
+                    order.OrderLine = orderLines;
+                    order.Price = GetOrderPrice(orderLines);
+                }
+                else
+                {
+                    order.Price = 0;
+                    order.OrderLine = null;
+                }
 
                 transaction.Commit();
             }
 
             catch (Exception ex)
             {
-                // Log
+                // Add Logger
                 Console.WriteLine(ex.Message);
                 transaction.Rollback();
             }
 
-            return Result.Ok();
+            return order.MapToResponse();
+           
         }
 
         public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)
@@ -124,7 +134,12 @@ namespace BAL.Services.OrderServices
 
             await _orderRepository.UpdateOrderAsync(order, cancellationToken);
 
-            return order.MapToResponse();
+            return Result.Ok();
+        }
+
+        public decimal GetOrderPrice(List<OrderLine> orderLines)
+        {
+            return orderLines.Sum(x => x.Price * x.Amount);
         }
     }
 }

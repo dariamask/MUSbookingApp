@@ -50,12 +50,20 @@ namespace BAL.Services.EquipmentServices
         {
             // TODO validation, check total amount
 
-            var equipments = new List<Equipment>(); 
+            
+            /* var tasks = orderLines.Select(async orderLine =>
+            {
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLine.EquipmentId, cancellationToken);
+                equipment.Amount -= orderLine.Amount;   
+                _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
+            });
+            await Task.WhenAll(tasks); */
+            
 
             foreach (var orderLine in orderLines)
             {
                 var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLine.EquipmentId, cancellationToken);
-                equipment.Amount -= orderLine.Amount;
+                equipment.Amount -= orderLine.Amount;   
                 await _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
             }
         }

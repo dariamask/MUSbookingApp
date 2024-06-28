@@ -12,8 +12,10 @@ namespace BAL.Mapper
                 Id = order.Id,
                 Description = order.Description,
                 Price = order.Price,
+                equipmentToOrderDtos = order.OrderLine?.MapToResponse(),
             };
         }
+
         public static List<OrderDto> MapToResponse(this IEnumerable<Order> orders)
         {
             return orders.Select(MapToResponse).ToList();

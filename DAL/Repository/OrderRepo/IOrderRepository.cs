@@ -10,6 +10,7 @@ namespace DAL.Repository.OrderRepo
         Task CreateOrderAsync(Order order, CancellationToken cancellationToken);
         Task UpdateOrderAsync(Order order, CancellationToken cancellationToken);
         Task DeleteOrderAsync(Order order, CancellationToken cancellationToken);
-        IDbTransaction BeginTransaction();
+        IDbTransaction BeginTransaction(IsolationLevel isolationLevel);
     }
 }
+ 

@@ -1,7 +1,8 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+
 namespace BAL.Dto.EquipmentDtos
 {
-    public record class EquipmentToOrderDto
+    public record EquipmentToOrderCreateDto
     {
         public Guid Id { get; set; }
         public int Quantity { get; set; }
