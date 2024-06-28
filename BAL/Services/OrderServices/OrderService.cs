@@ -12,6 +12,9 @@ using FluentResults;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BAL.Services.OrderServices
 {
@@ -44,15 +47,9 @@ namespace BAL.Services.OrderServices
             _equipmentService = equipmentService;
             _logger = logger;
         }
-        public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
+        public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto request, CancellationToken cancellationToken)
         {
-            var validationResult = await _createValidator.ValidateAsync(dto, cancellationToken);
-
-            // TODO валидации для создания заказа
-
-            // есть ли столько оборудования на складе?
-
-            // get equipment price
+            var validationResult = await _createValidator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -61,7 +58,7 @@ namespace BAL.Services.OrderServices
 
             var order = new Order
             {
-                Description = dto.Description,
+                Description = request.Description,
                 CreatedAt = DateTime.UtcNow,
             };
 
@@ -69,17 +66,42 @@ namespace BAL.Services.OrderServices
             
             try
             {
-                await _orderRepository.CreateOrderAsync(order, cancellationToken);
-
-                if (dto.EquipmentToOrder != null)
+                foreach (var eq in request.EquipmentToOrder)
                 {
-                    List<OrderLine> orderLines = dto.EquipmentToOrder
+                    var equipment = await _equipmentRepository.GetEquipmentByIdAsync(eq.Id, cancellationToken);
+
+                    if (equipment == null)
+                    {
+                        return Result.Fail(Errors.EquipmentDoesntExists);
+                    }
+
+                    List<OrderLine> orderLines = request.EquipmentToOrder
                     .Select(equipmentToOrder => new OrderLine
                     {
                         OrderId = order.Id,
-                        EquipmentId = equipmentToOrder.Id,
+                        EquipmentId = eq.Id,
                         Amount = equipmentToOrder.Quantity
                     }).ToList();
+                }
+
+                
+                    
+
+
+
+                await _orderRepository.CreateOrderAsync(order, cancellationToken);
+
+                if (request.EquipmentToOrder != null)
+                {
+                    List<OrderLine> orderLines = request.EquipmentToOrder
+                    .Select(equipmentToOrder => new OrderLine
+                    {
+                        OrderId = order.Id,
+                        EquipmentId = 
+                        Amount = equipmentToOrder.Quantity
+                    }).ToList();
+
+                    
 
                     await _equipmentService.SubstructAmountOfEquipmentAsync(orderLines, cancellationToken);
 

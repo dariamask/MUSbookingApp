@@ -11,6 +11,9 @@ namespace BAL.Validation
             RuleFor(x => x.Description)
                 .MaximumLength(1000)
                 .When(x => x is not null);
+
+            RuleForEach(x => x.EquipmentToOrder)
+                .SetValidator(new EquipmentToOrderCreateDtoValidator());
         }
 
     }
