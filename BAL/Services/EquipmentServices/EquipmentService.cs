@@ -46,16 +46,26 @@ namespace BAL.Services.EquipmentServices
             return equipment.MapToResponse();
         }
 
-        public async Task SubstructAmountOfEquipmentAsync(List<OrderLine> orderLines, CancellationToken cancellationToken)
+        public async Task<Result<List<OrderLine>>> SubstractAmountOfEquipmentAsync(List<OrderLine> orderLines, CancellationToken cancellationToken)
         {
-            // TODO validation, check total amount
+            var errors = new List<string>();
 
-            foreach (var orderLine in orderLines)
+            foreach (var orderLineEquipment in orderLines)
             {
-                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLine.EquipmentId, cancellationToken);
-                equipment.Amount -= orderLine.Amount;   
-                await _equipmentRepository.UpdateAmountOfEquipmentAsync(equipment, cancellationToken);
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLineEquipment.EquipmentId, cancellationToken);
+
+                if(equipment.Amount < orderLineEquipment.Amount)
+                {
+                    errors.Add(Errors.NotEnough + equipment.Name + equipment.Id);
+                    continue;
+                }
+
+                equipment.Amount -= orderLineEquipment.Amount;
+                await _equipmentRepository.UpdateEquipmentAsync(equipment, cancellationToken);
             }
+
+            return errors is null ? orderLines : Result.Fail(errors);
+
         }
         public async Task<decimal> GetEquipmentPriceById(Guid id, CancellationToken cancellationToken)
         {

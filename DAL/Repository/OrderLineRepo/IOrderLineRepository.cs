@@ -1,10 +1,8 @@
-﻿
-using DAL.Data.Entities;
-using System.Data;
+﻿using DAL.Data.Entities;
 
 namespace DAL.Repository.OrderLineRepo
 {
-    public interface IOrderLineRepository
+    public interface IOrderlineRepository
     {
         Task CreateOrderLineAsync(List<OrderLine> orders, CancellationToken cancellationToken);
         

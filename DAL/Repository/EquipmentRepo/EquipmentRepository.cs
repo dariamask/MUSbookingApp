@@ -11,12 +11,17 @@ namespace DAL.Repository.EquipmentRepo
         {
             _context = context;
         }
+        public async Task<int> GetTotalAmountOfEquipmentAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            return equipment is null ? 0 : equipment.Amount;
+        }
         public async Task CreateEquipmentAsync(Equipment equipment, CancellationToken cancellationToken)
         {
             _context.Add(equipment);
             await _context.SaveChangesAsync(cancellationToken);
         }
-        public async Task UpdateAmountOfEquipmentAsync(Equipment equipment, CancellationToken cancellationToken)
+        public async Task UpdateEquipmentAsync(Equipment equipment, CancellationToken cancellationToken)
         {
             _context.Update(equipment);
             await _context.SaveChangesAsync();

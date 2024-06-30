@@ -1,8 +1,8 @@
 ﻿using BAL.Dto.OrderDtos;
 using BAL.Mapper;
 using BAL.Services.EquipmentServices;
+using BAL.Services.OrderlineServices;
 using BAL.Validation.Result;
-using DAL.Data;
 using DAL.Data.Entities;
 //using DAL.Data.EntitiesConfiguration;
 using DAL.Repository.EquipmentRepo;
@@ -12,9 +12,6 @@ using FluentResults;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System.Data;
-using System.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BAL.Services.OrderServices
 {
@@ -22,8 +19,8 @@ namespace BAL.Services.OrderServices
     {
         private readonly ILogger<OrderService> _logger;
         private readonly IOrderRepository _orderRepository;
-        private readonly IOrderLineRepository _orderLineRepository;
         private readonly IEquipmentRepository _equipmentRepository;
+        private readonly IOrderlineService _orderlineService;
         private readonly IEquipmentService _equipmentService;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator;
@@ -32,8 +29,8 @@ namespace BAL.Services.OrderServices
             IEquipmentRepository equipmentRepository,
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator,
-            IOrderLineRepository orderLineRepository,
             IEquipmentService equipmentService,
+            IOrderlineService orderlineService,
             ILogger<OrderService> logger
             )
 
@@ -42,9 +39,9 @@ namespace BAL.Services.OrderServices
             _equipmentRepository = equipmentRepository;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
-            _orderLineRepository = orderLineRepository;
             _equipmentRepository = equipmentRepository;
             _equipmentService = equipmentService;
+            _orderlineService = orderlineService;
             _logger = logger;
         }
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto request, CancellationToken cancellationToken)
@@ -63,50 +60,28 @@ namespace BAL.Services.OrderServices
             };
 
             using var transaction = _orderRepository.BeginTransaction(IsolationLevel.Serializable);
-            
+
             try
             {
-                foreach (var eq in request.EquipmentToOrder)
+                if (request.EquipmentToOrder is not null)
                 {
-                    var equipment = await _equipmentRepository.GetEquipmentByIdAsync(eq.Id, cancellationToken);
+                    var orderlines = await _orderlineService.GetOrderlinesAsync(request.EquipmentToOrder, order.Id, cancellationToken);
 
-                    if (equipment == null)
+                    if (orderlines.IsFailed)
                     {
-                        return Result.Fail(Errors.EquipmentDoesntExists);
+                        transaction.Rollback();
+                        return Result.Fail(orderlines.Errors);
                     }
 
-                    List<OrderLine> orderLines = request.EquipmentToOrder
-                    .Select(equipmentToOrder => new OrderLine
+                    orderlines = await _equipmentService.SubstractAmountOfEquipmentAsync(orderlines.Value, cancellationToken);
+
+                    if (orderlines.IsFailed)
                     {
-                        OrderId = order.Id,
-                        EquipmentId = eq.Id,
-                        Amount = equipmentToOrder.Quantity
-                    }).ToList();
-                }
-
-                
-                    
-
-
-
-                await _orderRepository.CreateOrderAsync(order, cancellationToken);
-
-                if (request.EquipmentToOrder != null)
-                {
-                    List<OrderLine> orderLines = request.EquipmentToOrder
-                    .Select(equipmentToOrder => new OrderLine
-                    {
-                        OrderId = order.Id,
-                        EquipmentId = 
-                        Amount = equipmentToOrder.Quantity
-                    }).ToList();
-
-                    
-
-                    await _equipmentService.SubstructAmountOfEquipmentAsync(orderLines, cancellationToken);
-
-                    order.OrderLine = orderLines;
-                    order.Price = GetOrderPrice(orderLines);
+                        transaction.Rollback();
+                        return Result.Fail(orderlines.Errors);
+                    }
+                    order.OrderLine = orderlines.Value;
+                    order.Price = GetOrderPrice(order.OrderLine, cancellationToken);
                 }
                 else
                 {
@@ -114,6 +89,8 @@ namespace BAL.Services.OrderServices
                     order.OrderLine = null;
                 }
 
+                await _orderRepository.CreateOrderAsync(order, cancellationToken);
+                
                 transaction.Commit();
             }
 
@@ -166,7 +143,7 @@ namespace BAL.Services.OrderServices
             return Result.Ok();
         }
 
-        public decimal GetOrderPrice(List<OrderLine> orderLines)
+        public decimal GetOrderPrice(List<OrderLine> orderLines, CancellationToken cancellationToken)
         {
             return orderLines.Sum(x => x.Price * x.Amount);
         }

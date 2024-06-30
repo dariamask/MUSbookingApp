@@ -1,6 +1,7 @@
 using BAL.Dto.EquipmentDtos;
 using BAL.Dto.OrderDtos;
 using BAL.Services.EquipmentServices;
+using BAL.Services.OrderlineServices;
 using BAL.Services.OrderServices;
 using BAL.Validation;
 using DAL.Data;
@@ -31,7 +32,8 @@ namespace MUSbookingApp
 
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
-            builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
+            builder.Services.AddScoped<IOrderlineRepository, OrderlineRepository>();
+            builder.Services.AddScoped<IOrderlineService, OrderlineService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 

@@ -3,10 +3,10 @@ using DAL.Data.Entities;
 
 namespace DAL.Repository.OrderLineRepo
 {
-    public class OrderLineRepository : IOrderLineRepository
+    public class OrderlineRepository : IOrderlineRepository
     {
         private readonly DataContext _context;
-        public OrderLineRepository(DataContext context)
+        public OrderlineRepository(DataContext context)
         {
             _context = context;
         }   
