@@ -10,10 +10,9 @@ namespace DAL.Repository.OrderLineRepo
         {
             _context = context;
         }   
-
-        public async Task CreateOrderLineAsync(List<OrderLine> orders, CancellationToken cancellationToken)
+        public async Task CreateOrderLineAsync(OrderLine orderline, CancellationToken cancellationToken)
         {
-            orders.ForEach(orderline => _context.Add(orderline));
+            _context.Add(orderline);
             await _context.SaveChangesAsync();
         }
     }

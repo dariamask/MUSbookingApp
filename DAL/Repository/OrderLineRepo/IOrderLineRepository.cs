@@ -4,7 +4,6 @@ namespace DAL.Repository.OrderLineRepo
 {
     public interface IOrderlineRepository
     {
-        Task CreateOrderLineAsync(List<OrderLine> orders, CancellationToken cancellationToken);
-        
+        Task CreateOrderLineAsync(OrderLine order, CancellationToken cancellationToken); 
     }
 }

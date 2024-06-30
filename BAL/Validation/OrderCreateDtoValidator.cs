@@ -1,5 +1,4 @@
-﻿
-using BAL.Dto.OrderDtos;
+﻿using BAL.Dto.OrderDtos;
 using FluentValidation;
 
 namespace BAL.Validation
@@ -13,7 +12,7 @@ namespace BAL.Validation
                 .When(x => x is not null);
 
             RuleForEach(x => x.EquipmentToOrder)
-                .SetValidator(new EquipmentToOrderCreateDtoValidator());
+                .SetValidator(new OrderlineCreateDtoValidator());
         }
 
     }

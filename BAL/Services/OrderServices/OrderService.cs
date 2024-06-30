@@ -63,45 +63,37 @@ namespace BAL.Services.OrderServices
 
             try
             {
-                if (request.EquipmentToOrder is not null)
+                await _orderRepository.CreateOrderAsync(order, cancellationToken);
+
+                if (request.EquipmentToOrder is null)
                 {
-                    var orderlines = await _orderlineService.GetOrderlinesAsync(request.EquipmentToOrder, order.Id, cancellationToken);
-
-                    if (orderlines.IsFailed)
-                    {
-                        transaction.Rollback();
-                        return Result.Fail(orderlines.Errors);
-                    }
-
-                    orderlines = await _equipmentService.SubstractAmountOfEquipmentAsync(orderlines.Value, cancellationToken);
-
-                    if (orderlines.IsFailed)
-                    {
-                        transaction.Rollback();
-                        return Result.Fail(orderlines.Errors);
-                    }
-                    order.OrderLine = orderlines.Value;
-                    order.Price = GetOrderPrice(order.OrderLine, cancellationToken);
+                    order.Price = 0;
                 }
                 else
                 {
-                    order.Price = 0;
-                    order.OrderLine = null;
-                }
+                    var orderlines = await _orderlineService.CreateOrderlineAsync(request.EquipmentToOrder, order.Id, cancellationToken);
+                    
+                    if (orderlines.IsFailed)
+                    {
+                        transaction.Rollback();
+                        return Result.Fail(orderlines.Errors);
+                    }
 
-                await _orderRepository.CreateOrderAsync(order, cancellationToken);
-                
+                    order.OrderLine = orderlines.Value;
+                    order.Price = GetOrderPrice(orderlines.Value, cancellationToken);
+
+                }
+                    
+                await _orderRepository.UpdateOrderAsync(order, cancellationToken);
                 transaction.Commit();
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured: {ErrorMessage}", ex.Message);
                 transaction.Rollback();
             }
 
-            return order.MapToResponse();
-           
+            return order.MapToResponse();        
         }
 
         public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)

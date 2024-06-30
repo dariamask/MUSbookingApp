@@ -46,26 +46,10 @@ namespace BAL.Services.EquipmentServices
             return equipment.MapToResponse();
         }
 
-        public async Task<Result<List<OrderLine>>> SubstractAmountOfEquipmentAsync(List<OrderLine> orderLines, CancellationToken cancellationToken)
+        public async Task SubstractFromTotalAmountOfEquipmentAsync(OrderLine orderLine, Equipment equipment, CancellationToken cancellationToken)
         {
-            var errors = new List<string>();
-
-            foreach (var orderLineEquipment in orderLines)
-            {
-                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderLineEquipment.EquipmentId, cancellationToken);
-
-                if(equipment.Amount < orderLineEquipment.Amount)
-                {
-                    errors.Add(Errors.NotEnough + equipment.Name + equipment.Id);
-                    continue;
-                }
-
-                equipment.Amount -= orderLineEquipment.Amount;
-                await _equipmentRepository.UpdateEquipmentAsync(equipment, cancellationToken);
-            }
-
-            return errors is null ? orderLines : Result.Fail(errors);
-
+            equipment.Amount -= orderLine.Amount;
+            await _equipmentRepository.UpdateEquipmentAsync(equipment, cancellationToken);
         }
         public async Task<decimal> GetEquipmentPriceById(Guid id, CancellationToken cancellationToken)
         {

@@ -1,10 +1,9 @@
 ﻿
 namespace BAL.Dto.EquipmentDtos
 {
-    public record EquipmentToOrderCreateDto
+    public record OrderlineCreateDto
     {
         public Guid Id { get; set; }
         public int Quantity { get; set; }
-        public decimal Price { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace DAL.Repository.OrderRepo
 
         public async Task CreateOrderAsync(Order order, CancellationToken cancellationToken)
         {
-            _context.Update(order);
+            _context.Add(order);
             await _context.SaveChangesAsync(cancellationToken);
         }
 

@@ -9,6 +9,6 @@ namespace BAL.Validation.Result
         //equipment
         public const string EquipmentDoesntExist = "Equipment doest'n exist: ";
         public const string IsNotUnique = "Equipment name is not unique.";
-        public const string NotEnough = "There are not enough equipment: ";
+        public const string NotEnough = ": not enough equipment. Available quantity is: ";
     }
 }

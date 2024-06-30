@@ -7,6 +7,6 @@ namespace BAL.Services.OrderlineServices
 {
     public interface IOrderlineService
     {
-        public Task<Result<List<OrderLine>>> GetOrderlinesAsync(List<EquipmentToOrderCreateDto> equipmentToOrderRequest, Guid orderId, CancellationToken cancellationToken);       
+        public Task<Result<List<OrderLine>>> CreateOrderlineAsync(List<OrderlineCreateDto> orderlinesRequest, Guid orderId, CancellationToken cancellationToken);
     }
 }
