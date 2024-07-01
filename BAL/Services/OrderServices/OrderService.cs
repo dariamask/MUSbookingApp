@@ -51,6 +51,8 @@ namespace BAL.Services.OrderServices
 
             try
             {
+                await _orderRepository.CreateOrderAsync(order, cancellationToken);
+
                 if (request.EquipmentToOrder is null)
                 {
                     order.Price = 0;
@@ -65,15 +67,11 @@ namespace BAL.Services.OrderServices
                         return Result.Fail(orderlines.Errors);
                     }
 
-                    var newOrder = new Order
-                    {
-                        Description = request.Description,
-                        CreatedAt = DateTime.UtcNow,
-                        OrderLine = orderlines.ValueOrDefault,
-                        Price = GetOrderPrice(orderlines.Value, cancellationToken),
-                    };
+                    order.OrderLine = orderlines.ValueOrDefault;
+                    order.Price = GetOrderPrice(orderlines.ValueOrDefault, cancellationToken);
+
                
-                    await _orderRepository.CreateOrderAsync(newOrder, cancellationToken);
+                    await _orderRepository.UpdateOrderAsync(order, cancellationToken);
                 }
                     
                 transaction.Commit();
