@@ -6,8 +6,6 @@ using DAL.Data.Entities;
 using DAL.Repository.EquipmentRepo;
 using DAL.Repository.OrderLineRepo;
 using FluentResults;
-using FluentValidation;
-using System.Reflection.Metadata.Ecma335;
 
 namespace BAL.Services.OrderlineServices
 {
@@ -49,7 +47,6 @@ namespace BAL.Services.OrderlineServices
 
                 var orderline = new OrderLine
                 {
-                    OrderId = orderId,
                     EquipmentId = equipment.Id,
                     Amount = orderEquipment.Quantity,
                     Price = equipment.Price
@@ -57,7 +54,7 @@ namespace BAL.Services.OrderlineServices
 
                 await _equipmentService.SubstractFromTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
 
-                await _orderlineRepository.CreateOrderLineAsync(orderline, cancellationToken);
+                orderlines.Add(orderline);
             }
 
             return errors.Count == 0 ? orderlines : Result.Fail(errors);

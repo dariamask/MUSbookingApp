@@ -1,12 +1,8 @@
 ﻿using BAL.Dto.OrderDtos;
 using BAL.Mapper;
-using BAL.Services.EquipmentServices;
 using BAL.Services.OrderlineServices;
 using BAL.Validation.Result;
 using DAL.Data.Entities;
-//using DAL.Data.EntitiesConfiguration;
-using DAL.Repository.EquipmentRepo;
-using DAL.Repository.OrderLineRepo;
 using DAL.Repository.OrderRepo;
 using FluentResults;
 using FluentValidation;
@@ -19,31 +15,23 @@ namespace BAL.Services.OrderServices
     {
         private readonly ILogger<OrderService> _logger;
         private readonly IOrderRepository _orderRepository;
-        private readonly IEquipmentRepository _equipmentRepository;
         private readonly IOrderlineService _orderlineService;
-        private readonly IEquipmentService _equipmentService;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator;
         
         public OrderService(IOrderRepository orderRepository,
-            IEquipmentRepository equipmentRepository,
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderUpdateDto> updateValidator,
-            IEquipmentService equipmentService,
             IOrderlineService orderlineService,
-            ILogger<OrderService> logger
-            )
-
+            ILogger<OrderService> logger)
         {
             _orderRepository = orderRepository;
-            _equipmentRepository = equipmentRepository;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
-            _equipmentRepository = equipmentRepository;
-            _equipmentService = equipmentService;
             _orderlineService = orderlineService;
             _logger = logger;
         }
+
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto request, CancellationToken cancellationToken)
         {
             var validationResult = await _createValidator.ValidateAsync(request, cancellationToken);
@@ -63,8 +51,6 @@ namespace BAL.Services.OrderServices
 
             try
             {
-                await _orderRepository.CreateOrderAsync(order, cancellationToken);
-
                 if (request.EquipmentToOrder is null)
                 {
                     order.Price = 0;
@@ -79,12 +65,17 @@ namespace BAL.Services.OrderServices
                         return Result.Fail(orderlines.Errors);
                     }
 
-                    order.OrderLine = orderlines.Value;
-                    order.Price = GetOrderPrice(orderlines.Value, cancellationToken);
-
+                    var newOrder = new Order
+                    {
+                        Description = request.Description,
+                        CreatedAt = DateTime.UtcNow,
+                        OrderLine = orderlines.ValueOrDefault,
+                        Price = GetOrderPrice(orderlines.Value, cancellationToken),
+                    };
+               
+                    await _orderRepository.CreateOrderAsync(newOrder, cancellationToken);
                 }
                     
-                await _orderRepository.UpdateOrderAsync(order, cancellationToken);
                 transaction.Commit();
             }
             catch (Exception ex)
