@@ -1,5 +1,4 @@
-﻿
-using BAL.Dto.EquipmentDtos;
+﻿using BAL.Dto.OrderlineDtos;
 using BAL.Services.EquipmentServices;
 using BAL.Validation.Result;
 using DAL.Data.Entities;
@@ -31,11 +30,11 @@ namespace BAL.Services.OrderlineServices
 
             foreach (var orderEquipment in orderlinesRequest)
             {
-               var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderEquipment.Id, cancellationToken);
+               var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderEquipment.EquipmentId, cancellationToken);
 
                 if (equipment is null)
                 {
-                    errors.Add(Errors.EquipmentDoesntExist + orderEquipment.Id);
+                    errors.Add(Errors.EquipmentDoesntExist + orderEquipment.EquipmentId);
                     continue;
                 }
                 
@@ -47,17 +46,75 @@ namespace BAL.Services.OrderlineServices
 
                 var orderline = new OrderLine
                 {
+                    OrderId = orderId,
                     EquipmentId = equipment.Id,
                     Amount = orderEquipment.Quantity,
                     Price = equipment.Price
                 };
 
                 await _equipmentService.SubstractFromTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
+                await _orderlineRepository.CreateOrderLineAsync(orderline, cancellationToken);
 
                 orderlines.Add(orderline);
             }
 
             return errors.Count == 0 ? orderlines : Result.Fail(errors);
+        }
+        public async Task<Result<List<OrderLine>>> UpdateOrderlineAsync(List<OrderlineUpdateDto> orderlinesRequest, Order order, CancellationToken cancellationToken)
+        {
+            var errors = new List<string>();
+            var orderlines = new List<OrderLine>();
+
+            foreach (var orderEquipment in orderlinesRequest)
+            {
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderEquipment.EquipmentId, cancellationToken);
+
+                if (equipment is null)
+                {
+                    errors.Add(Errors.EquipmentDoesntExist + orderEquipment.EquipmentId);
+                    continue;
+                }
+
+                if (equipment.Amount < orderEquipment.Quantity)
+                {
+                    errors.Add(equipment.Name + equipment.Id + Errors.NotEnough + equipment.Amount);
+                    continue;
+                }
+
+                var orderline = new OrderLine
+                {
+                    //OrderId = orderId,
+                    EquipmentId = equipment.Id,
+                    Amount = orderEquipment.Quantity,
+                    Price = equipment.Price
+                };
+
+                await _equipmentService.SubstractFromTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
+                await _orderlineRepository.CreateOrderLineAsync(orderline, cancellationToken);
+
+                orderlines.Add(orderline);
+            }
+
+            return errors.Count == 0 ? orderlines : Result.Fail(errors);
+        }
+        public async Task<Result> DeleteOrderlineAsync(List<OrderLine> orderlines, CancellationToken cancellationToken)
+        {
+            foreach(var orderline in orderlines)
+            {
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderline.EquipmentId, cancellationToken);
+
+                await _equipmentService.AddToTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
+            }
+
+            return Result.Ok();
+        }
+        public async Task<Result> DeleteOrderlineAsync(OrderLine orderline, CancellationToken cancellationToken)
+        {
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderline.EquipmentId, cancellationToken);
+
+                await _equipmentService.AddToTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
+
+            return Result.Ok();
         }
     }
 }

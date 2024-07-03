@@ -5,9 +5,9 @@
 
 //namespace DAL.Data.EntitiesConfiguration
 //{
-//    public class OrderEquipmentConfiguration : IEntityTypeConfiguration<OrderLine>
+//    public class OrderEquipmentConfiguration : IEntityTypeConfiguration<OrderLines>
 //    {
-//        public void Configure(EntityTypeBuilder<OrderLine> builder)
+//        public void Configure(EntityTypeBuilder<OrderLines> builder)
 //        {
 //            builder.HasKey(x => new
 //            {

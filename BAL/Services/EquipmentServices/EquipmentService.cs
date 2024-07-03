@@ -22,12 +22,12 @@ namespace BAL.Services.EquipmentServices
         }
         public async Task<Result<EquipmentDto>> CreateEquipmentAsync(EquipmentCreateDto dto, CancellationToken cancellationToken)
         {
-            //var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
+            var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
 
-            //if (!validationResult.IsValid)
-            //{
-            //    return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
-            //}
+            if (!validationResult.IsValid)
+            {
+                return Result.Fail(validationResult.Errors.Select(failure => failure.ErrorMessage));
+            }
 
             //if (await _equipmentRepository.IsEquipmentUniqie(dto.Name, cancellationToken))
             //{
@@ -51,9 +51,11 @@ namespace BAL.Services.EquipmentServices
             equipment.Amount -= orderLine.Amount;
             await _equipmentRepository.UpdateEquipmentAsync(equipment, cancellationToken);
         }
-        public async Task<decimal> GetEquipmentPriceById(Guid id, CancellationToken cancellationToken)
+
+        public async Task AddToTotalAmountOfEquipmentAsync(OrderLine orderLine, Equipment equipment, CancellationToken cancellationToken)
         {
-            return await _equipmentRepository.GetEquipmentPriceById(id, cancellationToken);
+            equipment.Amount += orderLine.Amount;
+            await _equipmentRepository.UpdateEquipmentAsync(equipment, cancellationToken);
         }
     }
 }

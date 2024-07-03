@@ -44,14 +44,14 @@ namespace DAL.Migrations
                 name: "OrderLines",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     OrderId = table.Column<Guid>(type: "TEXT", nullable: false),
                     EquipmentId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Amount = table.Column<int>(type: "INTEGER", nullable: false)
+                    Amount = table.Column<int>(type: "INTEGER", nullable: false),
+                    Price = table.Column<decimal>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderLines", x => x.Id);
+                    table.PrimaryKey("PK_OrderLines", x => new { x.OrderId, x.EquipmentId });
                     table.ForeignKey(
                         name: "FK_OrderLines_Equipments_EquipmentId",
                         column: x => x.EquipmentId,
@@ -67,14 +67,15 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Equipments_Name",
+                table: "Equipments",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderLines_EquipmentId",
                 table: "OrderLines",
                 column: "EquipmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderLines_OrderId",
-                table: "OrderLines",
-                column: "OrderId");
         }
 
         /// <inheritdoc />

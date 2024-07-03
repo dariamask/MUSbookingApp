@@ -8,6 +8,6 @@ namespace DAL.Data.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set;}
         public decimal Price { get; set; }
-        public List<OrderLine>? OrderLine { get; set; }
+        public List<OrderLine>? OrderLines { get; set; }
     }
 }

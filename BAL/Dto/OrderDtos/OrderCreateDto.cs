@@ -1,5 +1,4 @@
-﻿
-using BAL.Dto.EquipmentDtos;
+﻿using BAL.Dto.OrderlineDtos;
 
 namespace BAL.Dto.OrderDtos
 {

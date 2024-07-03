@@ -33,7 +33,9 @@ namespace DAL.Repository.OrderRepo
 
         public async Task<Order?> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken)
         {
-            return await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken);
+            return await _context.Orders
+                //.Include(x => x.OrderLines)
+                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken);
         }
 
         public Task<List<Order?>> GetOrderPaginationAsync(CancellationToken cancellationToken)

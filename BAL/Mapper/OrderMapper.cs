@@ -12,7 +12,7 @@ namespace BAL.Mapper
                 Id = order.Id,
                 Description = order.Description,
                 Price = order.Price,
-                equipmentToOrderDtos = order.OrderLine?.MapToResponse(),
+                equipmentToOrderDtos = order.OrderLines?.MapToResponse(),
             };
         }
 

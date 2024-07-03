@@ -8,7 +8,7 @@ namespace BAL.Validation
         public OrderCreateDtoValidator()
         {
             RuleFor(x => x.Description)
-                .MaximumLength(1000)
+                .MaximumLength(500)
                 .When(x => x is not null);
 
             RuleForEach(x => x.EquipmentToOrder)

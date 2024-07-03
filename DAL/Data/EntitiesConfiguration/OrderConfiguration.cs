@@ -1,6 +1,7 @@
 ﻿using DAL.Data.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DAL.Data.EntitiesConfiguration
 {
@@ -8,7 +9,11 @@ namespace DAL.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.Navigation(x => x.OrderLine).AutoInclude();
+            builder.Navigation(x => x.OrderLines).AutoInclude();
+
+            builder.Property(x => x.Description).IsRequired()
+                .HasMaxLength(100)
+                .IsRequired(); 
 
             builder.HasMany<Equipment>()
                 .WithMany()

@@ -1,5 +1,4 @@
-﻿
-using BAL.Dto.EquipmentDtos;
+﻿using BAL.Dto.OrderlineDtos;
 
 namespace BAL.Dto.OrderDtos
 {
@@ -8,6 +7,6 @@ namespace BAL.Dto.OrderDtos
         public Guid Id { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
-        public List<EquipmentToOrderDto>? equipmentToOrderDtos { get; set; }
+        public List<OrderlineDto>? equipmentToOrderDtos { get; set; }
     }
 }

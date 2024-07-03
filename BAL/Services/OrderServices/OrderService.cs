@@ -67,9 +67,7 @@ namespace BAL.Services.OrderServices
                         return Result.Fail(orderlines.Errors);
                     }
 
-                    order.OrderLine = orderlines.ValueOrDefault;
                     order.Price = GetOrderPrice(orderlines.ValueOrDefault, cancellationToken);
-
                
                     await _orderRepository.UpdateOrderAsync(order, cancellationToken);
                 }
@@ -93,6 +91,8 @@ namespace BAL.Services.OrderServices
             {
                 return Result.Fail(Errors.OrderDoesntExist);
             }
+
+            await _orderlineService.DeleteOrderlineAsync(order.OrderLines, cancellationToken);
             
             await _orderRepository.DeleteOrderAsync(order, cancellationToken);
 
@@ -106,7 +106,12 @@ namespace BAL.Services.OrderServices
 
         public async Task<Result<OrderDto>> UpdateOrderAsync(Guid orderId, OrderUpdateDto updatedOrder, CancellationToken cancellationToken)
         {
-            //TODO валидация 
+            var result = await _updateValidator.ValidateAsync(updatedOrder, cancellationToken);
+
+            if (!result.IsValid)
+            {
+                return Result.Fail(result.Errors.Select(failure => failure.ErrorMessage));
+            }
 
             var order = await _orderRepository.GetOrderByIdAsync(orderId, cancellationToken);
 

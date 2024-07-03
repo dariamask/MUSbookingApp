@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace BAL.Validation
 {
-    public class OrderlineCreateDtoValidator : AbstractValidator<OrderlineCreateDto>
+    public class OrderlineUpdateDtoValidator : AbstractValidator<OrderlineUpdateDto>
     {
-        public OrderlineCreateDtoValidator()
+        public OrderlineUpdateDtoValidator()
         {
             RuleFor(x => x.Quantity)
                 .GreaterThanOrEqualTo(0);

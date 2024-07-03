@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240630092208_ChangeEquipmentEntity")]
-    partial class ChangeEquipmentEntity
+    [Migration("20240702201044_Test")]
+    partial class Test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,8 @@ namespace DAL.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
@@ -78,9 +80,6 @@ namespace DAL.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
@@ -100,7 +99,7 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("DAL.Data.Entities.Order", null)
-                        .WithMany("OrderLine")
+                        .WithMany("OrderLines")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -108,7 +107,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Data.Entities.Order", b =>
                 {
-                    b.Navigation("OrderLine");
+                    b.Navigation("OrderLines");
                 });
 #pragma warning restore 612, 618
         }

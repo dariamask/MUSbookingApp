@@ -1,12 +1,13 @@
-﻿
-using BAL.Dto.EquipmentDtos;
+﻿using BAL.Dto.OrderlineDtos;
 using DAL.Data.Entities;
 using FluentResults;
+using System.Threading;
 
 namespace BAL.Services.OrderlineServices
 {
     public interface IOrderlineService
     {
         public Task<Result<List<OrderLine>>> CreateOrderlineAsync(List<OrderlineCreateDto> orderlinesRequest, Guid orderId, CancellationToken cancellationToken);
+        public Task<Result> DeleteOrderlineAsync(List<OrderLine> orderlinesRequest, CancellationToken cancellationToken);
     }
 }
