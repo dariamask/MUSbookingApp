@@ -59,7 +59,7 @@ namespace BAL.Services.OrderServices
                 }
                 else
                 {
-                    var orderlines = await _orderlineService.CreateOrderlineAsync(request.EquipmentToOrder, order.Id, cancellationToken);
+                    var orderlines = await _orderlineService.CreateOrderlinesAsync(request.EquipmentToOrder, order.Id, cancellationToken);
                     
                     if (orderlines.IsFailed)
                     {

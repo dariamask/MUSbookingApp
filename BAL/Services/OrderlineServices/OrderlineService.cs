@@ -23,25 +23,29 @@ namespace BAL.Services.OrderlineServices
             _orderlineRepository = orderlineRepository;
             _equipmentService = equipmentService;
         }
-        public async Task<Result<List<OrderLine>>> CreateOrderlineAsync(List<OrderlineCreateDto> orderlinesRequest, Guid orderId, CancellationToken cancellationToken)
+        public async Task<Result<List<OrderLine>>> CreateOrderlinesAsync(List<OrderlineCreateDto> orderlinesRequest, Guid orderId, CancellationToken cancellationToken)
         {
             var errors = new List<string>();
             var orderlines = new List<OrderLine>();
+            var tasks = new List<Task>();
 
             foreach (var orderEquipment in orderlinesRequest)
             {
-               var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderEquipment.EquipmentId, cancellationToken);
+                tasks.Add(ProcessOrderEquipmentAsync(orderEquipment));             
+            }                
+            
+            async Task<Result<OrderLine>> ProcessOrderEquipmentAsync(OrderlineCreateDto orderEquipment)
+            {
+                var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderEquipment.EquipmentId, cancellationToken);
 
                 if (equipment is null)
                 {
-                    errors.Add(Errors.EquipmentDoesntExist + orderEquipment.EquipmentId);
-                    continue;
+                    return Result.Fail(Errors.EquipmentDoesntExist + orderEquipment.EquipmentId);
                 }
-                
+
                 if (equipment.Amount < orderEquipment.Quantity)
                 {
-                    errors.Add(equipment.Name + equipment.Id + Errors.NotEnough + equipment.Amount);
-                    continue;
+                    return Result.Fail(equipment.Name + equipment.Id + Errors.NotEnough + equipment.Amount);      
                 }
 
                 var orderline = new OrderLine
@@ -55,11 +59,16 @@ namespace BAL.Services.OrderlineServices
                 await _equipmentService.SubstractFromTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
                 await _orderlineRepository.CreateOrderLineAsync(orderline, cancellationToken);
 
-                orderlines.Add(orderline);
+                return orderline;
             }
 
-            return errors.Count == 0 ? orderlines : Result.Fail(errors);
+            var result =  await Task.WhenAll(tasks);
+
+            //return errors.Count == 0 ? orderlines : Result.Fail(errors);
         }
+
+
+            
         public async Task<Result<List<OrderLine>>> UpdateOrderlineAsync(List<OrderlineUpdateDto> orderlinesRequest, Order order, CancellationToken cancellationToken)
         {
             var errors = new List<string>();

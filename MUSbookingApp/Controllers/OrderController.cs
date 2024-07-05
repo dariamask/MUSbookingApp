@@ -34,7 +34,7 @@ namespace MUSbookingApp.Controllers
         {
             var result = await _orderService.CreateOrderAsync(request, cancellationToken);
             return result.ToActionResult();
-        }
+        }   
 
         [HttpPut]
         [ProducesResponseType(200)]
