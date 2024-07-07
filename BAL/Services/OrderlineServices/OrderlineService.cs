@@ -23,11 +23,9 @@ namespace BAL.Services.OrderlineServices
             _orderlineRepository = orderlineRepository;
             _equipmentService = equipmentService;
         }
-        public async Task<Result<List<OrderLine>>> CreateOrderlinesAsync(List<OrderlineCreateDto> orderlinesRequest, Guid orderId, CancellationToken cancellationToken)
+        public async Task<Result<OrderLine>[]> CreateOrderlinesAsync(List<OrderlineCreateDto> orderlinesRequest, Guid orderId, CancellationToken cancellationToken)
         {
-            var errors = new List<string>();
-            var orderlines = new List<OrderLine>();
-            var tasks = new List<Task>();
+            var tasks = new List<Task<Result<OrderLine>>>();
 
             foreach (var orderEquipment in orderlinesRequest)
             {
@@ -40,12 +38,12 @@ namespace BAL.Services.OrderlineServices
 
                 if (equipment is null)
                 {
-                    return Result.Fail(Errors.EquipmentDoesntExist + orderEquipment.EquipmentId);
+                    return Result.Fail(Errors.EquipmentDoesntExist(orderEquipment.EquipmentId));
                 }
 
                 if (equipment.Amount < orderEquipment.Quantity)
                 {
-                    return Result.Fail(equipment.Name + equipment.Id + Errors.NotEnough + equipment.Amount);      
+                    return Result.Fail(Errors.NotEnough(equipment));      
                 }
 
                 var orderline = new OrderLine
@@ -62,13 +60,9 @@ namespace BAL.Services.OrderlineServices
                 return orderline;
             }
 
-            var result =  await Task.WhenAll(tasks);
-
-            //return errors.Count == 0 ? orderlines : Result.Fail(errors);
+            return await Task.WhenAll(tasks);
         }
-
-
-            
+          
         public async Task<Result<List<OrderLine>>> UpdateOrderlineAsync(List<OrderlineUpdateDto> orderlinesRequest, Order order, CancellationToken cancellationToken)
         {
             var errors = new List<string>();
@@ -80,13 +74,13 @@ namespace BAL.Services.OrderlineServices
 
                 if (equipment is null)
                 {
-                    errors.Add(Errors.EquipmentDoesntExist + orderEquipment.EquipmentId);
+                    errors.Add(Errors.EquipmentDoesntExist(orderEquipment.EquipmentId));
                     continue;
                 }
 
                 if (equipment.Amount < orderEquipment.Quantity)
                 {
-                    errors.Add(equipment.Name + equipment.Id + Errors.NotEnough + equipment.Amount);
+                    errors.Add(Errors.NotEnough(equipment));
                     continue;
                 }
 

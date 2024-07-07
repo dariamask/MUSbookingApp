@@ -1,4 +1,5 @@
 ﻿using BAL.Dto.OrderDtos;
+using BAL.Dto.OrderlineDtos;
 using BAL.Mapper;
 using BAL.Services.OrderlineServices;
 using BAL.Validation.Result;
@@ -47,32 +48,30 @@ namespace BAL.Services.OrderServices
                 CreatedAt = DateTime.UtcNow,
             };
 
+            List<string>? failedOrderlineMessages = null;
+
             using var transaction = _orderRepository.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
                 await _orderRepository.CreateOrderAsync(order, cancellationToken);
 
-                if (request.EquipmentToOrder is null)
-                {
-                    order.Price = 0;
-                }
-                else
+                if (request.EquipmentToOrder is not null)
                 {
                     var orderlines = await _orderlineService.CreateOrderlinesAsync(request.EquipmentToOrder, order.Id, cancellationToken);
-                    
-                    if (orderlines.IsFailed)
-                    {
-                        transaction.Rollback();
-                        return Result.Fail(orderlines.Errors);
-                    }
 
-                    order.Price = GetOrderPrice(orderlines.ValueOrDefault, cancellationToken);
-               
-                    await _orderRepository.UpdateOrderAsync(order, cancellationToken);
+                    failedOrderlineMessages = orderlines
+                        .Where(ol => ol.IsFailed)
+                        .SelectMany(ol => ol.Errors.Select(x => x.Message))
+                        .ToList();
                 }
-                    
+
+                order.Price = GetOrderPrice(order.OrderLines, cancellationToken);
+
+                await _orderRepository.UpdateOrderAsync(order, cancellationToken);
+
                 transaction.Commit();
+
             }
             catch (Exception ex)
             {
@@ -80,7 +79,7 @@ namespace BAL.Services.OrderServices
                 transaction.Rollback();
             }
 
-            return order.MapToResponse();        
+            return order.MapToResponse(failedOrderlineMessages);
         }
 
         public async Task<Result> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken)
@@ -129,9 +128,9 @@ namespace BAL.Services.OrderServices
             return Result.Ok();
         }
 
-        public decimal GetOrderPrice(List<OrderLine> orderLines, CancellationToken cancellationToken)
+        public decimal GetOrderPrice(List<OrderLine>? orderLines, CancellationToken cancellationToken)
         {
-            return orderLines.Sum(x => x.Price * x.Amount);
+            return orderLines is null ? 0 : orderLines.Sum(x => x.Price * x.Amount);
         }
     }
 }

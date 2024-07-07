@@ -1,24 +1,25 @@
 ﻿using BAL.Dto.OrderDtos;
+using BAL.Dto.OrderlineDtos;
 using DAL.Data.Entities;
+using FluentResults;
 
 namespace BAL.Mapper
 {
     public static class OrderMapper
     {
-        public static OrderDto MapToResponse(this Order order)
+        public static OrderDto MapToResponse(this Order order, List<string>? errors)
         {
             return new OrderDto
             {
                 Id = order.Id,
                 Description = order.Description,
                 Price = order.Price,
-                equipmentToOrderDtos = order.OrderLines?.MapToResponse(),
+                equipmentToOrderDtos = new OrderlineResultDto
+                {
+                    SuccessfulOrderLines = order.OrderLines?.MapToResponse(),
+                    ErrorMessages = errors
+                }
             };
-        }
-
-        public static List<OrderDto> MapToResponse(this IEnumerable<Order> orders)
-        {
-            return orders.Select(MapToResponse).ToList();
         }
     }
 }

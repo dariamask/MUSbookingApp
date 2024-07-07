@@ -1,4 +1,6 @@
 ﻿
+using DAL.Data.Entities;
+
 namespace BAL.Validation.Result
 {
     public class Errors
@@ -7,8 +9,16 @@ namespace BAL.Validation.Result
         public const string OrderDoesntExist = "Order doesn't exist.";
 
         //equipment
-        public const string EquipmentDoesntExist = "Equipment doest'n exist: ";
         public const string IsNotUnique = "Equipment name is not unique.";
-        public const string NotEnough = ": not enough equipment. Available quantity is: ";
+
+        //orderline
+        public static string EquipmentDoesntExist(Guid equipmentId)
+        {
+            return $"Equipment doest'n exist: {equipmentId}";
+        }
+        public static string NotEnough(Equipment equipment)
+        {
+            return $"Not enough equipment: {equipment.Name} - {equipment.Id}. Available quantity is: {equipment.Amount}";
+        }
     }
 }
