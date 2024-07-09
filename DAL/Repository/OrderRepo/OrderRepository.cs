@@ -19,6 +19,11 @@ namespace DAL.Repository.OrderRepo
             return transaction.GetDbTransaction();
         }
 
+        public async Task<int> GetTotalNumberOfOrders(CancellationToken cancellationToken)
+        {
+            return await _context.Orders.CountAsync(cancellationToken);
+        }
+
         public async Task CreateOrderAsync(Order order, CancellationToken cancellationToken)
         {
             _context.Add(order);
@@ -33,14 +38,16 @@ namespace DAL.Repository.OrderRepo
 
         public async Task<Order?> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken)
         {
-            return await _context.Orders
-                //.Include(x => x.OrderLines)
-                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken);
+            return await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken);
         }
 
-        public Task<List<Order?>> GetOrderPaginationAsync(CancellationToken cancellationToken)
+        public async Task<List<Order>> GetOrderPaginationByCreatedDateAsync(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _context.Orders.AsQueryable()
+                .OrderBy(o => o.CreatedAt)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
         }
 
         public async Task UpdateOrderAsync(Order order, CancellationToken cancellationToken)

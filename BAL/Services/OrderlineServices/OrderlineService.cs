@@ -29,10 +29,10 @@ namespace BAL.Services.OrderlineServices
 
             foreach (var orderEquipment in orderlinesRequest)
             {
-                tasks.Add(ProcessOrderEquipmentAsync(orderEquipment));             
+                tasks.Add(ProcessOrderEquipmentToCreateAsync(orderEquipment));             
             }                
             
-            async Task<Result<OrderLine>> ProcessOrderEquipmentAsync(OrderlineCreateDto orderEquipment)
+            async Task<Result<OrderLine>> ProcessOrderEquipmentToCreateAsync(OrderlineCreateDto orderEquipment)
             {
                 var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderEquipment.EquipmentId, cancellationToken);
 
@@ -63,7 +63,7 @@ namespace BAL.Services.OrderlineServices
             return await Task.WhenAll(tasks);
         }
           
-        public async Task<Result<List<OrderLine>>> UpdateOrderlineAsync(List<OrderlineUpdateDto> orderlinesRequest, Order order, CancellationToken cancellationToken)
+        public async Task<Result<List<OrderLine>>> UpdateOrderlineAsync(Order order, List<OrderlineUpdateDto> orderlinesRequest, CancellationToken cancellationToken)
         {
             var errors = new List<string>();
             var orderlines = new List<OrderLine>();
@@ -102,12 +102,21 @@ namespace BAL.Services.OrderlineServices
         }
         public async Task<Result> DeleteOrderlineAsync(List<OrderLine> orderlines, CancellationToken cancellationToken)
         {
+            var tasks = new List<Task>();
+
             foreach(var orderline in orderlines)
+            {
+                tasks.Add(ProcessOrderlineToDeleteAsync(orderline));
+            }
+
+            async Task ProcessOrderlineToDeleteAsync(OrderLine orderline)
             {
                 var equipment = await _equipmentRepository.GetEquipmentByIdAsync(orderline.EquipmentId, cancellationToken);
 
                 await _equipmentService.AddToTotalAmountOfEquipmentAsync(orderline, equipment, cancellationToken);
             }
+                
+            await Task.WhenAll(tasks);
 
             return Result.Ok();
         }
