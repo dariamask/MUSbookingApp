@@ -100,7 +100,7 @@ namespace BAL.Services.OrderServices
                 
                 if(order.OrderLines is not null)
                 {
-                    await _orderlineService.DeleteOrderlineAsync(order.OrderLines, cancellationToken);
+                    await _orderlineService.DeleteOrderlinesAsync(order.OrderLines, cancellationToken);
                 }
 
                 await _orderRepository.DeleteOrderAsync(order, cancellationToken);
@@ -139,7 +139,7 @@ namespace BAL.Services.OrderServices
             return orders.MapToResponse();
         }
 
-        public async Task<Result<OrderDto>> UpdateOrderAsync(Guid orderId, OrderUpdateDto updatedOrder, CancellationToken cancellationToken)
+        public async Task<Result<string>> UpdateOrderAsync(Guid orderId, OrderUpdateDto updatedOrder, CancellationToken cancellationToken)
         {
             var validationRezult = await _updateValidator.ValidateAsync(updatedOrder, cancellationToken);
 
@@ -155,11 +155,41 @@ namespace BAL.Services.OrderServices
                 return Result.Fail(Errors.OrderDoesntExist);
             }
 
-            if (updatedOrder.EquipmentToOrder is not null)
+            
+
+            if(updatedOrder.EquipmentToOrder is not null && order.OrderLines is not null)
             {
-                var result = await _orderlineService.UpdateOrderlineAsync(order, updatedOrder.EquipmentToOrder, cancellationToken);
+                //orders to delete
+                var orderLinesToDelete = order.OrderLines
+                    .Where(orderline => !updatedOrder.EquipmentToOrder
+                    .Any(orderlineUpdate => orderlineUpdate.EquipmentId == orderline.EquipmentId))
+                    .ToList();
+
+                var deleteResult = await _orderlineService.DeleteOrderlinesAsync(orderLinesToDelete, cancellationToken);
+                
+                //orders to create
+                var ordelinesToCreate = updatedOrder.EquipmentToOrder
+                    .Where(updOrder => !order.OrderLines
+                    .Any(orderline => orderline.EquipmentId == updOrder.EquipmentId))
+                    .MapToOrderlineCreateDto()
+                    .ToList();
+
+                var createResult = await _orderlineService.CreateOrderlinesAsync(ordelinesToCreate, order.Id, cancellationToken);
             }
             
+            
+
+
+
+
+
+            //orders to update
+
+            //orders no changes
+
+            
+
+
 
             order.UpdatedAt = DateTime.UtcNow;
             await _orderRepository.UpdateOrderAsync(order, cancellationToken);

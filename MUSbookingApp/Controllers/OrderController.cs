@@ -19,7 +19,6 @@ namespace MUSbookingApp.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        //Вывод списка всех заказов, отсортированных по дате создания с пагинацией
         public async Task<ActionResult<OrderDto>> GetOrderPagination(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
             var result = await _orderService.GetOrderWithPaginationAsync(pageIndex, pageSize, cancellationToken);
@@ -29,18 +28,16 @@ namespace MUSbookingApp.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]        
-        //Создание заказа
         public async Task<ActionResult<string>> Create([FromBody] OrderCreateDto request, CancellationToken cancellationToken)
         {
             var result = await _orderService.CreateOrderAsync(request, cancellationToken);
             return result.ToActionResult();
         }   
-
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        //Обновление заказа
-        public async Task<ActionResult<OrderDto>> Update(Guid orderId,
+
+        public async Task<ActionResult<string>> Update(Guid orderId,
             [FromBody] OrderUpdateDto request, CancellationToken cancellationToken)
         {
             var result = await _orderService.UpdateOrderAsync(orderId, request, cancellationToken);

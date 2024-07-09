@@ -15,6 +15,11 @@ namespace DAL.Repository.OrderLineRepo
             _context.Add(orderline);
             await _context.SaveChangesAsync(cancellationToken);
         }
+        public async Task UpdateOrderLineAsync(OrderLine orderline, CancellationToken cancellationToken)
+        {
+            _context.Update(orderline);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
         public async Task DeleteOrderlineAsync(OrderLine orderline, CancellationToken cancellationToken)
         {
             _context.Remove(orderline);
